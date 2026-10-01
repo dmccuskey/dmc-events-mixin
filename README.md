@@ -115,7 +115,7 @@ To update, copy `dmc_corona_boot.lua` and `dmc_corona/` again from the newer ver
 
 ## Documentation
 
-`require 'dmc_corona.dmc_events_mix'` returns lua-events-mixin's module, so its documentation applies as written:
+`require 'dmc_corona.dmc_events_mix'` returns a copy of lua-events-mixin's module (0.3.0) with `VERSION` added, so its documentation applies as written:
 
 - [How Events Work](https://github.com/dmccuskey/lua-events-mixin#how-events-work): event names and types, the event table, listeners
 - [Reference](https://github.com/dmccuskey/lua-events-mixin#reference): `patch()`, `EventsMix`, every method, and [As a Mixin](https://github.com/dmccuskey/lua-events-mixin#as-a-mixin)
@@ -125,16 +125,9 @@ To update, copy `dmc_corona_boot.lua` and `dmc_corona/` again from the newer ver
 
 dmc-events-mixin has no settings: `dmc_corona.cfg` needs no section for it, only the `[DMC_CORONA]` section that tells the loader where the libraries are. See [dmc-corona-boot Configuration](https://github.com/dmccuskey/dmc-corona-boot/blob/master/docs/configuration.md).
 
-## Known Issues
-
-The bugs of the events themselves are in lua-events-mixin's [Known Issues](https://github.com/dmccuskey/lua-events-mixin#known-issues); the one most likely to be met: `removeEventListener()` raises an error when nothing listens to that name. In `dmc_events_mix.lua`:
-
-- It sets the global `_extend` (its copy of `Utils.extend()` declares the inner function without `local`).
-- Its version (`0.1.0`) isn't available to code.
-
 ## Development
 
-Only `dmc_corona/dmc_events_mix.lua` is written in this repository. It loads the DMC boot loader and returns lua-events-mixin's module from `lib.dmc_lua.lua_events_mix`. Everything else is a generated copy; fix it in its own repository, then rebuild:
+Only `dmc_corona/dmc_events_mix.lua` and `tests/` are written in this repository. `dmc_events_mix.lua` loads the DMC boot loader and returns a copy of lua-events-mixin's module from `lib.dmc_lua.lua_events_mix`, with `VERSION`; the shared module, and the `EventsMix` mixin in it, are left as they are. Everything else is a generated copy; fix it in its own repository, then rebuild:
 
 | file | owner |
 |---|---|
@@ -147,7 +140,13 @@ The copies are made by Snakemake from sibling checkouts of the repositories abov
 snakemake --cores 1 build_all
 ```
 
-dmc-events-mixin has no tests of its own; lua-events-mixin's are in its `spec/`. The Quick Start is the check that the package loads in Solar2D.
+The unit tests check the wrapper and that lua-events-mixin's fixes come through it; lua-events-mixin's full specs are in its `spec/`. They run under plain Lua 5.1 with dkjson, with stand-ins for the Solar2D globals the boot loader uses. From the repository's root folder:
+
+```sh
+tests/run_unit.sh
+```
+
+The Quick Start is the check that the package loads in Solar2D.
 
 ## License
 
